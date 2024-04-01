@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-// Rota estabelecimento 
+// Rota estabelecimento
 Route::post('/estabelecimentos', [EstabelecimentoController::class, 'create']);
 Route::get('/estabelecimentos', [EstabelecimentoController::class, 'index']);
 Route::delete('/estabelecimentos/{id}', [EstabelecimentoController::class, 'delete']);
 Route::patch('/estabelecimentos/{id}', [EstabelecimentoController::class, 'update']);
 
-// Rotas prêmios 
+// Rotas prêmios
 Route::post('/premios', [PremioController::class, 'create']);
 Route::get('/premios', [PremioController::class, 'index']);
 Route::get('/premios-roleta', [PremioController::class, 'getPremiosRoleta']);
@@ -32,8 +32,9 @@ Route::get('/promotores', [PromotorController::class, 'index']);
 Route::delete('/promotores/{id}', [PromotorController::class, 'delete']);
 Route::patch('/promotores/{id}', [PromotorController::class, 'update']);
 
-// Rotas participantes 
+// Rotas participantes
 Route::post('/participantes', [ParticipanteController::class, 'create']);
+Route::get('/participantes/{cpf}', [ParticipanteController::class, 'find']);
 Route::get('/participantes', [ParticipanteController::class, 'index']);
 Route::delete('/participantes/{id}', [ParticipanteController::class, 'delete']);
 Route::patch('/participantes/{id}', [ParticipanteController::class, 'update']);

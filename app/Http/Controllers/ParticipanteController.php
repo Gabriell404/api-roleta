@@ -18,13 +18,14 @@ class ParticipanteController extends Controller
     public function create(ParticipanteCreateRequest $request)
     {
         try {
+
             $query = $this->participante->create([
                 'nome' => $request->get('nome'),
                 'idade' => $request->get('idade'),
                 'cpf' => $request->get('cpf'),
                 'telefone' => $request->get('telefone'),
                 'cupomFiscal' => $request->get('cupomFiscal'),
-                'dataParticipacao' => $request->get('dataParticipacao'),
+                'dataParticipacao' => now()->toDateString(),
                 'idEstabelecimento' => $request->get('idEstabelecimento')
             ]);
 
@@ -111,6 +112,17 @@ class ParticipanteController extends Controller
                     'itemExcluido' => $participante
                 ], 200);
             }
+
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
+
+    public function find(String $cpf)
+    {
+        try {
+
+            return response()->json($this->participante->query()->where('cpf', $cpf)->orderBy('id', 'desc')->first());
 
         } catch (\Throwable $th) {
             return $th->getMessage();

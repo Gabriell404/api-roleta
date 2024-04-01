@@ -14,7 +14,6 @@ class ParticipanteCreateRequest extends FormRequest
             'cpf' => 'required|min:11|max:11',
             'telefone' => 'required|min:9|max:255',
             'cupomFiscal' => 'required|max:255',
-            'dataParticipacao' => 'required',
             'idEstabelecimento' => 'required'
         ];
     }
@@ -35,7 +34,6 @@ class ParticipanteCreateRequest extends FormRequest
             'telefone.max' => 'telefone deve conter no máximo :max caracteres',
             'cupomFiscal.required' => 'cupomFiscal não pode ser vazio.',
             'cupomFiscal.max' => 'cupomFiscal deve conter no máximo :max caracteres',
-            'dataParticipacao.required' => 'dataParticipacao não pode ser vazio.',
             'idEstabelecimento.required' => 'idEstabelecimento não pode ser vazio.',
         ];
     }
@@ -48,5 +46,5 @@ class ParticipanteCreateRequest extends FormRequest
                 'erro' => $validator->errors(),
             ], 400));
         }
-    } 
+    }
 }
