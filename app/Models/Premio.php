@@ -14,7 +14,6 @@ class Premio extends Model
         'caminhoImage',
         'regraContemplacao',
         'pesoPremio',
-        'pesoPremio',
         'estoque',
         'status'
     ];

@@ -66,7 +66,6 @@ class PremioController extends Controller
                     'mensagem' => 'Premio criado com sucesso',
                     'premio' => $query
                 ], 201);
-
             }
         } catch (\Throwable $th) {
             return $th->getMessage();
@@ -76,15 +75,43 @@ class PremioController extends Controller
     public function getPremiosRoleta()
     {
         try {
-            $query = $this->premios->where('status', '=', 'ativo')->get();
+            $premiosAtivo = $this->premios->where('status', '=', 'ativo')->get();
 
-            if (count($query) == 7) {
-                return response()->json($query, 200);
+            $somaPesos = $premiosAtivo->sum('pesoPremio');
+
+            $chancesAcumuladas = [];
+
+            $acumulador = 0;
+            foreach ($premiosAtivo as $premio) {
+                $chance = ($premio->pesoPremio / $somaPesos) * 100; 
+                $acumulador += $chance;
+                $chancesAcumuladas[] = $acumulador;
+            }
+
+            // Sorteia um prêmio
+            $numeroSorteado = rand(1, 100); 
+            $premioSorteado = null;
+
+            // Encontra o prêmio correspondente ao número sorteado
+            foreach ($chancesAcumuladas as $index => $chance) {
+                if ($numeroSorteado <= $chance) {
+                    $premioSorteado = $premiosAtivo[$index];
+                    break;
+                }
+            }
+
+            return response()->json([
+                'erro' => false,
+                'premioSorteado' => $premioSorteado,
+            ]);
+
+            if (count($premiosAtivo) == 7) {
+                return response()->json($premiosAtivo, 200);
             } else {
                 return response()->json([
                     'erro' => true,
                     'mensagem' => 'Para a roleta, é necessário que haja pelo menos 7 prêmios com status ativo.',
-                    'quantidadeDeStatusAtivo' => count($query)
+                    'quantidadeDeStatusAtivo' => count($premiosAtivo)
                 ], 500);
             }
         } catch (\Throwable $th) {
@@ -96,7 +123,6 @@ class PremioController extends Controller
     {
         try {
             $premio = $this->premios::find($id);
-
             if ($premio == null) {
                 return response()->json([
                     'erro' => true,
@@ -111,7 +137,6 @@ class PremioController extends Controller
                     'premio' => $premio
                 ], 200);
             }
-
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
@@ -171,7 +196,6 @@ class PremioController extends Controller
                     'itemExcluido' => $premio
                 ], 200);
             }
-
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
