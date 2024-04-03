@@ -49,12 +49,11 @@ class PremioController extends Controller
             if ($request->file('fileImagemPremio')) {
                 $file = $request->file('fileImagemPremio');
                 $fileName = $file->getClientOriginalName();
-                $path = hash('sha256', time());
 
-                if (Storage::disk('uploadsImagemPremio')->put($path . '/' . $fileName, File::get($file))) {
+                if (Storage::disk('public')->put($fileName, File::get($file))) {
                     $input['nomePremio'] = $request->get('nomePremio');
                     $input['codigoColor'] = $request->get('codigoColor');
-                    $input['caminhoImage'] = $path;
+                    $input['caminhoImage'] = $fileName;
                     $input['regraContemplacao'] = $request->get('regraContemplacao');
                     $input['pesoPremio'] = $request->get('pesoPremio');
                     $input['estoque'] = $request->get('estoque');
@@ -83,13 +82,13 @@ class PremioController extends Controller
 
             $acumulador = 0;
             foreach ($premiosAtivo as $premio) {
-                $chance = ($premio->pesoPremio / $somaPesos) * 100; 
+                $chance = ($premio->pesoPremio / $somaPesos) * 100;
                 $acumulador += $chance;
                 $chancesAcumuladas[] = $acumulador;
             }
 
             // Sorteia um prêmio
-            $numeroSorteado = rand(1, 100); 
+            $numeroSorteado = rand(1, 100);
             $premioSorteado = null;
 
             // Encontra o prêmio correspondente ao número sorteado
