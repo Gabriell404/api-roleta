@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class HistoricoContemplados extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'pesoPremio',
+        'dataHoraContemplacao',
+        'idParticipante',
+        'idPremioContemplado',
+        'idEstabelecimento'
+    ];
 }

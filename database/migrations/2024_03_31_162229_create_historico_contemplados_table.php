@@ -14,13 +14,10 @@ return new class extends Migration
         Schema::create('historico_contemplados', function (Blueprint $table) {
             $table->id();
             $table->string('pesoPremio');
-            $table->dateTime('dataHoraGiro');
             $table->dateTime('dataHoraContemplacao');
-            $table->unsignedBigInteger('idGiroSorte');
             $table->unsignedBigInteger('idParticipante');
             $table->unsignedBigInteger('idPremioContemplado');
             $table->unsignedBigInteger('idEstabelecimento');
-            $table->foreign('idGiroSorte')->references('id')->on('giro_sortes');
             $table->foreign('idParticipante')->references('id')->on('participantes');
             $table->foreign('idPremioContemplado')->references('id')->on('premios');
             $table->foreign('idEstabelecimento')->references('id')->on('estabelecimentos');

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Premio\PremioCreateRequest;
+use App\Http\Requests\PremioGet\PremioGetRequest;
+use App\Models\HistoricoContemplados;
 use App\Models\Premio;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -11,10 +14,12 @@ use Illuminate\Http\Request;
 class PremioController extends Controller
 {
     private $premios;
+    private $historico;
 
-    public function __construct(Premio $premios)
+    public function __construct(Premio $premios, HistoricoContemplados $historico)
     {
         $this->premios = $premios;
+        $this->historico = $historico;
     }
 
     public function index(Request $request)
@@ -54,7 +59,6 @@ class PremioController extends Controller
                     $input['nomePremio'] = $request->get('nomePremio');
                     $input['codigoColor'] = $request->get('codigoColor');
                     $input['caminhoImage'] = $fileName;
-                    $input['regraContemplacao'] = $request->get('regraContemplacao');
                     $input['pesoPremio'] = $request->get('pesoPremio');
                     $input['estoque'] = $request->get('estoque');
 
@@ -71,41 +75,46 @@ class PremioController extends Controller
         }
     }
 
-    public function getPremiosRoleta()
+    public function getPremiosRoleta(PremioGetRequest $request)
     {
         try {
             $premiosAtivo = $this->premios->where('status', '=', 'ativo')->get();
-
             $somaPesos = $premiosAtivo->sum('pesoPremio');
-
             $chancesAcumuladas = [];
-
             $acumulador = 0;
-            foreach ($premiosAtivo as $premio) {
-                $chance = ($premio->pesoPremio / $somaPesos) * 100;
-                $acumulador += $chance;
-                $chancesAcumuladas[] = $acumulador;
-            }
-
-            // Sorteia um prêmio
             $numeroSorteado = rand(1, 100);
             $premioSorteado = null;
 
-            // Encontra o prêmio correspondente ao número sorteado
-            foreach ($chancesAcumuladas as $index => $chance) {
-                if ($numeroSorteado <= $chance) {
-                    $premioSorteado = $premiosAtivo[$index];
-                    break;
-                }
-            }
-
-            return response()->json([
-                'erro' => false,
-                'premioSorteado' => $premioSorteado,
-            ]);
-
             if (count($premiosAtivo) == 7) {
-                return response()->json($premiosAtivo, 200);
+                foreach ($premiosAtivo as $premio) {
+                    $chance = ($premio->pesoPremio / $somaPesos) * 100;
+                    $acumulador += $chance;
+                    $chancesAcumuladas[] = $acumulador;
+                }
+
+                foreach ($chancesAcumuladas as $index => $chance) {
+                    if ($numeroSorteado <= $chance) {
+                        $premioSorteado = $premiosAtivo[$index];
+                        break;
+                    }
+                }
+                
+                if ($premioSorteado) {
+                    $this->historico->create([
+                        'pesoPremio' => $premioSorteado->pesoPremio,
+                        'dataHoraContemplacao' => Carbon::now(),
+                        'idParticipante' => $request->get('idParticipante'),
+                        'idPremioContemplado' => $premioSorteado->id,
+                        'idEstabelecimento' => $request->get('idEstabelecimento'),
+                    ]);
+                }
+
+
+                return response()->json([
+                    'erro' => false,
+                    'premiosRoleta' => $premiosAtivo,
+                    'premioSorteado' => $premioSorteado
+                ]);
             } else {
                 return response()->json([
                     'erro' => true,

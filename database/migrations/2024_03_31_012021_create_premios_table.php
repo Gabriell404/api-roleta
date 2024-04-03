@@ -16,9 +16,8 @@ return new class extends Migration
             $table->string('nomePremio');
             $table->string('codigoColor');
             $table->string('caminhoImage');
-            $table->string('regraContemplacao');
-            $table->string('pesoPremio');
-            $table->integer('estoque');
+            $table->integer('pesoPremio');
+            $table->integer('estoque')->nullable();
             $table->enum('status', ['ativo', 'desativado'])->default('desativado');
             $table->timestamps();
         });
