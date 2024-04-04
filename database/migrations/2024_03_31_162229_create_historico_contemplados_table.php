@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('historico_contemplados', function (Blueprint $table) {
             $table->id();
             $table->string('pesoPremio');
-            $table->dateTime('dataHoraContemplacao');
             $table->unsignedBigInteger('idParticipante');
             $table->unsignedBigInteger('idPremioContemplado');
             $table->unsignedBigInteger('idEstabelecimento');

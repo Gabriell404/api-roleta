@@ -20,6 +20,7 @@ class PremioController extends Controller
     {
         $this->premios = $premios;
         $this->historico = $historico;
+
     }
 
     public function index(Request $request)
@@ -78,6 +79,7 @@ class PremioController extends Controller
     public function getPremiosRoleta(PremioGetRequest $request)
     {
         try {
+            $dataDoDiaAtual = Carbon::today()->format('Y-m-d H:i:s');
             $premiosAtivo = $this->premios->where('status', '=', 'ativo')->get();
             $somaPesos = $premiosAtivo->sum('pesoPremio');
             $chancesAcumuladas = [];
@@ -98,20 +100,37 @@ class PremioController extends Controller
                         break;
                     }
                 }
-                
-                if ($premioSorteado) {
-                    $this->historico->create([
-                        'pesoPremio' => $premioSorteado->pesoPremio,
-                        'dataHoraContemplacao' => Carbon::now(),
-                        'idParticipante' => $request->get('idParticipante'),
-                        'idPremioContemplado' => $premioSorteado->id,
-                        'idEstabelecimento' => $request->get('idEstabelecimento'),
-                    ]);
-                }
 
+                $idDoPremioSorteado = $premioSorteado->id;
+                $resultados = $this->historico->whereDate('created_at', $dataDoDiaAtual)->where('idPremioContemplado', '=', $idDoPremioSorteado)->get();
+                $count = count($resultados);
+                $estoqueDoPremioSorteado = $premioSorteado->estoque;
+
+                if ($premioSorteado) {
+                    if ($premioSorteado->estoque != 0) {
+                        if ($estoqueDoPremioSorteado - $count > 0) {
+                            $this->historico->create([
+                                'pesoPremio' => $premioSorteado->pesoPremio,
+                                'idParticipante' => $request->get('idParticipante'),
+                                'idPremioContemplado' => $premioSorteado->id,
+                                'idEstabelecimento' => $request->get('idEstabelecimento'),
+                            ]);
+                        } else {
+                            $premioSorteado = [];
+                        }
+                    } else {
+                        $this->historico->create([
+                            'pesoPremio' => $premioSorteado->pesoPremio,
+                            'idParticipante' => $request->get('idParticipante'),
+                            'idPremioContemplado' => $premioSorteado->id,
+                            'idEstabelecimento' => $request->get('idEstabelecimento'),
+                        ]);
+                    }
+                }
 
                 return response()->json([
                     'erro' => false,
+                    'idDoPremioSorteado' => $idDoPremioSorteado,
                     'premiosRoleta' => $premiosAtivo,
                     'premioSorteado' => $premioSorteado
                 ]);

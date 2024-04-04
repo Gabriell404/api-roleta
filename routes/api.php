@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\EstabelecimentoController;
+use App\Http\Controllers\HistoricoContempladosController;
 use App\Http\Controllers\ParticipanteController;
 use App\Http\Controllers\PremioController;
 use App\Http\Controllers\PromotorController;
@@ -38,3 +39,6 @@ Route::get('/participantes/{cpf}', [ParticipanteController::class, 'find']);
 Route::get('/participantes', [ParticipanteController::class, 'index']);
 Route::delete('/participantes/{id}', [ParticipanteController::class, 'delete']);
 Route::patch('/participantes/{id}', [ParticipanteController::class, 'update']);
+
+// Rotas historico contemplados 
+Route::get('/historico-contemplados',[HistoricoContempladosController::class, 'index']);
