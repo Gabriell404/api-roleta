@@ -187,7 +187,7 @@ class PremioController extends Controller
                 ], 500);
             }
 
-            if (count($premioAtivo) == 7) {
+            if (count($premioAtivo) == 7 && $request->get('status') == 'ativo') {
                 return response()->json([
                     'erro' => true,
                     'mensagem' => 'O limite máximo de prêmios com o status ativo foi alcançado.',
