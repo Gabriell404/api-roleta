@@ -16,7 +16,7 @@ class UsuarioController extends Controller
             $query = User::create([
                 'name' => $request->get('nome'),
                 'email' => $request->get('email'),
-                'password' => Hash::make($request->senha)
+                'password' => Hash::make($request->password)
             ]);
 
             return response()->json([
@@ -33,13 +33,13 @@ class UsuarioController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'senha' => 'required',
+            'password' => 'required',
         ]);
 
         $user = User::where('email', '=', $request->get('email'))->first();
 
         if ($user) {
-            if (Hash::check($request->senha, $user->password)) {
+            if (Hash::check($request->password, $user->password)) {
                 Auth::login($user);
 
                 return response()->json([
@@ -48,6 +48,11 @@ class UsuarioController extends Controller
                     'user' => $user,
                     'token' => $user->createToken($user->email)->plainTextToken
                 ], 200);
+            } else {
+                return response()->json([ 
+                    'erro' => true,
+                    'mensagem' => 'Senha inválida',
+                ], 401);
             }
         } else {
             return response()->json([

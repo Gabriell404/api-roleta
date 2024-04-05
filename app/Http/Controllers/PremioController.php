@@ -4,23 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Premio\PremioCreateRequest;
 use App\Http\Requests\PremioGet\PremioGetRequest;
+use App\Models\Estabelecimento;
 use App\Models\HistoricoContemplados;
 use App\Models\Premio;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Mockery\Undefined;
 
 class PremioController extends Controller
 {
     private $premios;
     private $historico;
+    private $estabelecimento;
 
-    public function __construct(Premio $premios, HistoricoContemplados $historico)
+    public function __construct(Premio $premios, HistoricoContemplados $historico, Estabelecimento $estabelecimento)
     {
         $this->premios = $premios;
         $this->historico = $historico;
-
+        $this->estabelecimento = $estabelecimento;
     }
 
     public function index(Request $request)
@@ -76,7 +79,7 @@ class PremioController extends Controller
         }
     }
 
-    public function getPremiosRoleta(PremioGetRequest $request)
+    public function getPremiosRoleta(Request $request)
     {
         try {
             $dataDoDiaAtual = Carbon::today()->format('Y-m-d H:i:s');
@@ -85,7 +88,7 @@ class PremioController extends Controller
             $chancesAcumuladas = [];
             $acumulador = 0;
             $numeroSorteado = rand(1, 100);
-            $premioSorteado = null;
+            $premioSorteado = $this->premios;
 
             if (count($premiosAtivo) == 7) {
                 foreach ($premiosAtivo as $premio) {
@@ -107,13 +110,15 @@ class PremioController extends Controller
                 $estoqueDoPremioSorteado = $premioSorteado->estoque;
 
                 if ($premioSorteado) {
+                    $idEstabelecimento = $this->estabelecimento->select('id')->where('status', '=', 'ativo')->pluck('id');
+                    
                     if ($premioSorteado->estoque != 0) {
                         if ($estoqueDoPremioSorteado - $count > 0) {
                             $this->historico->create([
                                 'pesoPremio' => $premioSorteado->pesoPremio,
                                 'idParticipante' => $request->get('idParticipante'),
                                 'idPremioContemplado' => $premioSorteado->id,
-                                'idEstabelecimento' => $request->get('idEstabelecimento'),
+                                'idEstabelecimento' => $idEstabelecimento[0],
                             ]);
                         } else {
                             $premioSorteado = [];
@@ -123,7 +128,7 @@ class PremioController extends Controller
                             'pesoPremio' => $premioSorteado->pesoPremio,
                             'idParticipante' => $request->get('idParticipante'),
                             'idPremioContemplado' => $premioSorteado->id,
-                            'idEstabelecimento' => $request->get('idEstabelecimento'),
+                            'idEstabelecimento' => $idEstabelecimento[0],
                         ]);
                     }
                 }
@@ -169,7 +174,7 @@ class PremioController extends Controller
         }
     }
 
-    public function udapteStatus(Request $request, int $id)
+    public function updateStatus(Request $request, int $id)
     {
         try {
             $premio = $this->premios::find($id);

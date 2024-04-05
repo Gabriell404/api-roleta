@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('codigoColor');
             $table->string('caminhoImage');
             $table->integer('pesoPremio');
-            $table->integer('estoque')->default(0);
+            $table->integer('estoque')->nullable()->default(0);
             $table->enum('status', ['ativo', 'desativado'])->default('desativado');
             $table->timestamps();
         });

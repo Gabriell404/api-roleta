@@ -15,11 +15,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/estabelecimentos', [EstabelecimentoController::class, 'create']);
     Route::delete('/estabelecimentos/{id}', [EstabelecimentoController::class, 'delete']);
     Route::patch('/estabelecimentos/{id}', [EstabelecimentoController::class, 'update']);
+    Route::put('/estabelecimentos-status/{id}', [EstabelecimentoController::class, 'updateStatus']);
 
     // Rotas prêmios      
     Route::post('/premios', [PremioController::class, 'create']);
     Route::delete('/premios/{id}', [PremioController::class, 'delete']);
-    Route::put('/premios-status/{id}', [PremioController::class, 'udapteStatus']);
+    Route::put('/premios-status/{id}', [PremioController::class, 'updateStatus']);
     Route::patch('/premios/{id}', [PremioController::class, 'update']);
 
     // Rotas participante
@@ -32,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/estabelecimentos', [EstabelecimentoController::class, 'index']);
 
 // Rotas do usuario 
-Route::post('/usuario', [UsuarioController::class, 'create']);
+Route::post('/user-create', [UsuarioController::class, 'create']);
 Route::post('/login', [UsuarioController::class, 'login']);
 
 // Rotas prêmios

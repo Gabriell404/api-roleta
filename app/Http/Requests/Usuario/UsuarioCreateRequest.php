@@ -12,7 +12,7 @@ class UsuarioCreateRequest extends FormRequest
         return [
             'nome' => 'required|min:1|:max:255',
             'email' => 'required',
-            'senha' => 'required',
+            'password' => 'required',
         ];
     }
 
@@ -23,7 +23,7 @@ class UsuarioCreateRequest extends FormRequest
             'nome.max' => 'O campo nome deve conter no máximo :max caracteres',
             'nome.min' => 'O campo nome deve conter no minimo :min caracteres',
             'email.required' => 'O campo email não pode ser vazio.',
-            'senha.required' => 'O campo senha não pode ser vazio',
+            'password.required' => 'O campo senha não pode ser vazio',
         ];
     }
 

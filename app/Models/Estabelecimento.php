@@ -11,6 +11,7 @@ class Estabelecimento extends Model
     protected $fillable = [
         'nomeEstabelecimento',
         'cidade',
-        'estado'
+        'estado',
+        'status'
     ];
 }

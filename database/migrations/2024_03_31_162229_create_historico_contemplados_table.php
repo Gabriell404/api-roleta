@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('historico_contemplados', function (Blueprint $table) {
             $table->id();
             $table->string('pesoPremio');
-            $table->unsignedBigInteger('idParticipante');
+            $table->unsignedBigInteger('idParticipante')->nullable();
             $table->unsignedBigInteger('idPremioContemplado');
             $table->unsignedBigInteger('idEstabelecimento');
             $table->foreign('idParticipante')->references('id')->on('participantes');

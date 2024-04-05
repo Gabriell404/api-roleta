@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nomeEstabelecimento');
             $table->string('cidade');
             $table->string('estado');
+            $table->enum('status', ['ativo', 'desativado'])->default('desativado');
             $table->timestamps();
         });
     }
