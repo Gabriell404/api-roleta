@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('caminhoImage');
             $table->integer('pesoPremio');
             $table->integer('estoque')->nullable()->default(0);
-            $table->enum('status', ['ativo', 'desativado'])->default('desativado');
+            $table->enum('status', ['ativo', 'inativo'])->default('desativado');
             $table->timestamps();
         });
     }
