@@ -25,9 +25,9 @@ return new class extends Migration
 
         DB::table('premios')->insert([
             'nomePremio' => 'Vazio',
-            'codigoColor' => '#ccc',
+            'codigoColor' => '#FFD600',
             'pesoPremio' => 0,
-            'caminhoImage' => 'vazio.jpg',
+            'caminhoImage' => 'tenteDeNovo.svg',
         ]);
     }
     /**

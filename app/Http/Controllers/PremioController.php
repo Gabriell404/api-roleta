@@ -107,7 +107,7 @@ class PremioController extends Controller
                 ], 500);
             }
 
-            if (count($premiosAtivo) == 7) {
+            if (count($premiosAtivo) == 8) {
                 foreach ($premiosAtivo as $premio) {
                     $chance = ($premio->pesoPremio / $somaPesos) * 100;
                     $acumulador += $chance;
@@ -165,7 +165,7 @@ class PremioController extends Controller
 
                 return response()->json([
                     'erro' => false,
-                    'aqui' => $idDoPremioSorteado,
+                    'idDoPremioSorteado' => $idDoPremioSorteado,
                     'premioSorteadoVazio' => $premioSorteadoVazio,
                     'premioSorteado' => $premioSorteado,
                     'premiosRoleta' => $premiosAtivo
