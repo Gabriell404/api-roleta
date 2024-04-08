@@ -27,7 +27,7 @@ return new class extends Migration
             'nomePremio' => 'Vazio',
             'codigoColor' => '#ccc',
             'pesoPremio' => 0,
-            'caminhoImage' => 'user.jpg',
+            'caminhoImage' => 'vazio.jpg',
         ]);
     }
     /**
