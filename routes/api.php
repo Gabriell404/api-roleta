@@ -10,24 +10,24 @@ use App\Http\Controllers\UsuarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
-    // Rota estabelecimento
-    Route::post('/estabelecimentos', [EstabelecimentoController::class, 'create']);
-    Route::delete('/estabelecimentos/{id}', [EstabelecimentoController::class, 'delete']);
-    Route::patch('/estabelecimentos/{id}', [EstabelecimentoController::class, 'update']);
-    Route::put('/estabelecimentos-status/{id}', [EstabelecimentoController::class, 'updateStatus']);
+Route::middleware('auth:sanctum')->group(function () { });
+// Rota estabelecimento
+Route::post('/estabelecimentos', [EstabelecimentoController::class, 'create']);
+Route::delete('/estabelecimentos/{id}', [EstabelecimentoController::class, 'delete']);
+Route::patch('/estabelecimentos/{id}', [EstabelecimentoController::class, 'update']);
+Route::put('/estabelecimentos-status/{id}', [EstabelecimentoController::class, 'updateStatus']);
 
-    // Rotas prêmios      
-    Route::post('/premios', [PremioController::class, 'create']);
-    Route::delete('/premios/{id}', [PremioController::class, 'delete']);
-    Route::put('/premios-status/{id}', [PremioController::class, 'updateStatus']);
-    Route::patch('/premios/{id}', [PremioController::class, 'update']);
+// Rotas prêmios      
+Route::post('/premios', [PremioController::class, 'create']);
+Route::delete('/premios/{id}', [PremioController::class, 'delete']);
+Route::put('/premios-status/{id}', [PremioController::class, 'updateStatus']);
+Route::patch('/premios/{id}', [PremioController::class, 'update']);
 
-    // Rotas participante
-    Route::post('/participantes', [ParticipanteController::class, 'create']);
-    Route::delete('/participantes/{id}', [ParticipanteController::class, 'delete']);
-    Route::patch('/participantes/{id}', [ParticipanteController::class, 'update']);
-});
+// Rotas participante
+Route::post('/participantes', [ParticipanteController::class, 'create']);
+Route::delete('/participantes/{id}', [ParticipanteController::class, 'delete']);
+Route::patch('/participantes/{id}', [ParticipanteController::class, 'update']);
+// });
 
 // Rota estabelecimento
 Route::get('/estabelecimentos', [EstabelecimentoController::class, 'index']);

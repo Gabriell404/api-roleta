@@ -11,22 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('premios', function (Blueprint $table) {
+        Schema::create('ultimos_premios', function (Blueprint $table) {
             $table->id();
-            $table->string('nomePremio');
-            $table->string('codigoColor');
-            $table->string('caminhoImage');
-            $table->integer('pesoPremio');
-            $table->integer('estoque')->nullable();
-            $table->enum('status', ['ativo', 'inativo'])->default('inativo');
+            $table->unsignedBigInteger('idPremio');
+            $table->foreign('idPremio')->references('id')->on('premios');
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('premios');
+        Schema::dropIfExists('ultimos_premios');
     }
 };

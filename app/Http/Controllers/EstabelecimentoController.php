@@ -114,35 +114,35 @@ class EstabelecimentoController extends Controller
     public function updateStatus(Request $request, int $id)
     {
         try {
-            $premio = $this->estabelecimento::find($id);
+            $estabelecimentoFind = $this->estabelecimento::find($id);
             $estabelecimentoAtivo = $this->estabelecimento->where('status', '=', 'ativo')->get();
 
-            if ($premio == null) {
+            if ($estabelecimentoFind == null) {
                 return response()->json([
                     'erro' => true,
-                    'mensagem' => 'O ID fornecido não pertence a nenhum prêmio.'
+                    'mensagem' => 'O ID fornecido não pertence a nenhum estabelecimento.'
                 ], 500);
             }
 
             if (count($estabelecimentoAtivo) >= 1 && $request->get('status') == 'ativo') {
                 return response()->json([
                     'erro' => true,
-                    'mensagem' => 'O limite máximo de prêmios com o status ativo foi alcançado.',
+                    'mensagem' => 'O limite máximo de estabelecimentos com o status ativo foi alcançado.',
                     'quantidadeDeStatusAtivo' => count($estabelecimentoAtivo)
                 ], 500);
             } else {
-                $premio->update([
+                $estabelecimentoFind->update([
                     'status' => $request->get('status')
                 ]);
 
                 return response()->json([
                     'erro' => false,
                     'mensagem' => 'Status do prêmio atualizado com sucesso.',
-                    'premio' => $premio
+                    'premio' => $estabelecimentoFind
                 ], 200);
             }
         } catch (\Throwable $th) {
-            
+
             return $th->getMessage();
         }
     }
