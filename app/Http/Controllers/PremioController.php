@@ -89,9 +89,8 @@ class PremioController extends Controller
     public function getPremiosRoleta(Request $request)
     {
         try {
+            $premioSorteadoNull = $this->premios->where('nomePremio', '=', 'Vazio')->first();
             $premioSorteadoVazio = false;
-            $dados = array("nomePremio" => "Vazio");
-            $premioSorteadoNull = json_encode($dados);
             $dataDoDiaAtual = Carbon::today()->format('Y-m-d H:i:s');
             $premiosAtivo = $this->premios->where('status', '=', 'ativo')->get();
             $estabelecimentosAtivo = $this->estabelecimento->where('status', '=', 'ativo')->get();
@@ -126,15 +125,17 @@ class PremioController extends Controller
 
                 if ($premioSorteado) {
                     $registrosUltimosPremiosTotal = $this->ultimosPremios->get();
-                    if (count($registrosUltimosPremiosTotal) >= 2) {
-                        $this->ultimosPremios::truncate();
-                    }
+                    // return response()->json(count($registrosUltimosPremiosTotal));
+                    if (count($registrosUltimosPremiosTotal) == 3) {
+                        $registroDelete = $this->ultimosPremios->first();
+                        $registroDelete->delete();
+                    };
 
                     $registrosUltimosPremios = $this->ultimosPremios->where('idPremio', '=', $idDoPremioSorteado)->get();
                     $idEstabelecimento = $this->estabelecimento->select('id')->where('status', '=', 'ativo')->pluck('id');
 
                     if ($premioSorteado->estoque != null) {
-                        if ($premioSorteado->estoque - count($resultados) > 0 && count($registrosUltimosPremios) <= 2) {
+                        if ($premioSorteado->estoque - count($resultados) > 0 && count($registrosUltimosPremios) != 2) {
                             $this->ultimosPremios->create(['idPremio' => $idDoPremioSorteado]);
                             $this->historico->create([
                                 'pesoPremio' => $premioSorteado->pesoPremio,
@@ -147,7 +148,7 @@ class PremioController extends Controller
                             $premioSorteadoVazio = true;
                         }
                     } else {
-                        if (count($registrosUltimosPremios) <= 2) {
+                        if (count($registrosUltimosPremios) != 2) {
                             $this->ultimosPremios->create(['idPremio' => $idDoPremioSorteado]);
                             $this->historico->create([
                                 'pesoPremio' => $premioSorteado->pesoPremio,
@@ -164,6 +165,7 @@ class PremioController extends Controller
 
                 return response()->json([
                     'erro' => false,
+                    'aqui' => $idDoPremioSorteado,
                     'premioSorteadoVazio' => $premioSorteadoVazio,
                     'premioSorteado' => $premioSorteado,
                     'premiosRoleta' => $premiosAtivo

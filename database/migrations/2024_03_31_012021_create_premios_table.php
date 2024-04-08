@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -21,6 +22,13 @@ return new class extends Migration
             $table->enum('status', ['ativo', 'inativo'])->default('inativo');
             $table->timestamps();
         });
+
+        DB::table('premios')->insert([
+            'nomePremio' => 'Vazio',
+            'codigoColor' => '#ccc',
+            'pesoPremio' => 0,
+            'caminhoImage' => 'user.jpg',
+        ]);
     }
     /**
      * Reverse the migrations.
