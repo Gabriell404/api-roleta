@@ -107,7 +107,7 @@ class PremioController extends Controller
                 ], 500);
             }
 
-            if (count($premiosAtivo) == 8) {
+            if (count($premiosAtivo) == 15) {
                 foreach ($premiosAtivo as $premio) {
                     $chance = ($premio->pesoPremio / $somaPesos) * 100;
                     $acumulador += $chance;
@@ -125,7 +125,6 @@ class PremioController extends Controller
 
                 if ($premioSorteado) {
                     $registrosUltimosPremiosTotal = $this->ultimosPremios->get();
-                    // return response()->json(count($registrosUltimosPremiosTotal));
                     if (count($registrosUltimosPremiosTotal) == 3) {
                         $registroDelete = $this->ultimosPremios->first();
                         $registroDelete->delete();
@@ -173,7 +172,7 @@ class PremioController extends Controller
             } else {
                 return response()->json([
                     'erro' => true,
-                    'mensagem' => 'Para a roleta, é necessário que haja pelo menos 7 prêmios com status ativo.',
+                    'mensagem' => 'Para a roleta, é necessário que haja apenas 15 prêmios ativos, incluindo o prêmio vazio!.',
                     'quantidadeDeStatusAtivo' => count($premiosAtivo)
                 ], 500);
             }
@@ -181,6 +180,23 @@ class PremioController extends Controller
             return $th->getMessage();
         }
     }
+
+    // public function getPremiosRoleta() {
+    //     $premiosAtivos = $this->premios->where('status', '=', 'ativo')->take(15)->get();
+
+    //     if (count($premiosAtivos) < 15) {
+    //         return response()->json([
+    //             'erro' => true,
+    //             'mensagem' => 'Para a roleta, é necessário que haja pelo menos 14 prêmios com status ativo.',
+    //             'quantidadeDeStatusAtivo' => count($premiosAtivos)
+    //         ], 500);
+    //     }
+
+    //     return response()->json([
+    //         'erro' => false,
+    //         'premiosRoleta' => $premiosAtivos,
+    //     ]);
+    // }
 
     public function update(Request $request, int $id)
     {
