@@ -15,10 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nome');
             $table->string('idade');
-            $table->string('cpf');
+            $table->string('instagram')->nullable();
             $table->String('telefone');
-            $table->string('cupomFiscal');
-            $table->date('dataParticipacao');
             $table->unsignedBigInteger('idEstabelecimento');
             $table->foreign('idEstabelecimento')->references('id')->on('estabelecimentos');
             $table->timestamps();

@@ -11,9 +11,7 @@ class ParticipanteCreateRequest extends FormRequest
         return [
             'nome' => 'required|min:2|max:255',
             'idade' => 'required|max:255',
-            'cpf' => 'required|min:11|max:11',
             'telefone' => 'required|min:9|max:255',
-            'cupomFiscal' => 'required|max:255',
             'idEstabelecimento' => 'required'
         ];
     }

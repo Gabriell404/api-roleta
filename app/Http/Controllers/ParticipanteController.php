@@ -18,14 +18,20 @@ class ParticipanteController extends Controller
     public function create(ParticipanteCreateRequest $request)
     {
         try {
+            $participante = $this->participante->where('telefone', $request->get('telefone'))->first();
+
+            if ($participante) {
+                return response([
+                    'erro' => true,
+                    'mensagem' => 'Esse participante já foi cadastrado!'
+                ], 500);
+            }
 
             $query = $this->participante->create([
                 'nome' => $request->get('nome'),
                 'idade' => $request->get('idade'),
-                'cpf' => $request->get('cpf'),
+                'instagram' => $request->get('instagram'),
                 'telefone' => $request->get('telefone'),
-                'cupomFiscal' => $request->get('cupomFiscal'),
-                'dataParticipacao' => now()->toDateString(),
                 'idEstabelecimento' => $request->get('idEstabelecimento')
             ]);
 

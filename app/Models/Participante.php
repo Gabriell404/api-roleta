@@ -11,9 +11,8 @@ class Participante extends Model
     protected $fillable = [
         'nome',
         'idade',
-        'cpf',
+        'instagram',
         'telefone',
-        'cupomFiscal',
         'dataParticipacao',
         'idEstabelecimento'
     ];

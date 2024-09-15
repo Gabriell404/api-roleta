@@ -24,7 +24,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/premios/{id}', [PremioController::class, 'update']);
 
     // Rotas participante
-    Route::post('/participantes', [ParticipanteController::class, 'create']);
     Route::delete('/participantes/{id}', [ParticipanteController::class, 'delete']);
     Route::patch('/participantes/{id}', [ParticipanteController::class, 'update']);
 
@@ -52,6 +51,7 @@ Route::patch('/promotores/{id}', [PromotorController::class, 'update']);
 // Rotas participantes
 Route::get('/participantes/{cpf}', [ParticipanteController::class, 'find']);
 Route::get('/participantes', [ParticipanteController::class, 'index']);
+Route::post('/participantes', [ParticipanteController::class, 'create']);
 
 // Rota historico contemplados 
 Route::get('/historico-contemplados', [HistoricoContempladosController::class, 'index']);
