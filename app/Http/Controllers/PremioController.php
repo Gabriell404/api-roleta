@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Mockery\Undefined;
 
 class PremioController extends Controller
@@ -86,96 +87,76 @@ class PremioController extends Controller
         }
     }
 
+    public function createHistoricoContemplados($premioSorteado)
+    {
+        $this->historico->create([
+            'pesoPremio' => $premioSorteado->pesoPremio,
+            'idParticipante' => null,
+            'idPremioContemplado' => $premioSorteado->id,
+            'idEstabelecimento' => 1,
+        ]);
+    }
+
+    public function sortePremio()
+    {
+
+        $isValid = false;
+
+        while (!$isValid) {
+            $premioRandom = DB::table('premios')->where('status', '=', 'ativo')->inRandomOrder()->first();
+            $qtdSorteadoPorPeso = $this->historico->where('pesoPremio', '=', $premioRandom->pesoPremio)->count();
+
+            switch ($premioRandom->pesoPremio) {
+                case 1:
+                    if ($qtdSorteadoPorPeso < 800) {
+                        $this->createHistoricoContemplados($premioRandom);
+                        $isValid = true;
+                    }
+                    break;
+                case 2:
+                    if ($qtdSorteadoPorPeso < 100) {
+                        $this->createHistoricoContemplados($premioRandom);
+                        $isValid = true;
+                    }
+                    break;
+                case 3:
+                    if ($qtdSorteadoPorPeso < 70) {
+                        $this->createHistoricoContemplados($premioRandom);
+                        $isValid = true;
+                    }
+                    break;
+                case 4:
+                    if ($qtdSorteadoPorPeso < 29) {
+                        $this->createHistoricoContemplados($premioRandom);
+                        $isValid = true;
+                    }
+                    break;
+                case 5:
+                    if ($qtdSorteadoPorPeso < 1) {
+                        $this->createHistoricoContemplados($premioRandom);
+                        $isValid = true;
+                    }
+                    break;
+            }
+        }
+
+
+        return $premioRandom;
+    }
+
     public function getPremiosRoleta(Request $request)
     {
         try {
-            $premioSorteadoNull = $this->premios->where('nomePremio', '=', 'Vazio')->first();
-            $premioSorteadoVazio = false;
-            $dataDoDiaAtual = Carbon::today()->format('Y-m-d H:i:s');
-            $premiosAtivo = $this->premios->where('status', '=', 'ativo')->get();
-            $estabelecimentosAtivo = $this->estabelecimento->where('status', '=', 'ativo')->get();
-            $somaPesos = $premiosAtivo->sum('pesoPremio');
-            $chancesAcumuladas = [];
-            $acumulador = 0;
-            $numeroSorteado = rand(1, 100);
-            $premioSorteado = $this->premios;
-
-            if (count($estabelecimentosAtivo) == 0) {
-                return response()->json([
-                    'erro' => true,
-                    'mensagem' => 'Para realizar o giro da roleta, é necessário que haja um estabelecimento com o status ativo'
-                ], 500);
-            }
-
-            if (count($premiosAtivo) == 15) {
-                foreach ($premiosAtivo as $premio) {
-                    $chance = ($premio->pesoPremio / $somaPesos) * 100;
-                    $acumulador += $chance;
-                    $chancesAcumuladas[] = $acumulador;
-                }
-
-                foreach ($chancesAcumuladas as $index => $chance) {
-                    if ($numeroSorteado <= $chance) {
-                        $premioSorteado = $premiosAtivo[$index];
-                        break;
-                    }
-                }
-                $idDoPremioSorteado = $premioSorteado->id;
-                $resultados = $this->historico->whereDate('created_at', $dataDoDiaAtual)->where('idPremioContemplado', '=', $idDoPremioSorteado)->get();
-
-                if ($premioSorteado) {
-                    $registrosUltimosPremiosTotal = $this->ultimosPremios->get();
-                    if (count($registrosUltimosPremiosTotal) == 3) {
-                        $registroDelete = $this->ultimosPremios->first();
-                        $registroDelete->delete();
-                    };
-
-                    $registrosUltimosPremios = $this->ultimosPremios->where('idPremio', '=', $idDoPremioSorteado)->get();
-                    $idEstabelecimento = $this->estabelecimento->select('id')->where('status', '=', 'ativo')->pluck('id');
-
-                    if ($premioSorteado->estoque != null) {
-                        if ($premioSorteado->estoque - count($resultados) > 0 && count($registrosUltimosPremios) != 2) {
-                            $this->ultimosPremios->create(['idPremio' => $idDoPremioSorteado]);
-                            $this->historico->create([
-                                'pesoPremio' => $premioSorteado->pesoPremio,
-                                'idParticipante' => $request->get('idParticipante'),
-                                'idPremioContemplado' => $premioSorteado->id,
-                                'idEstabelecimento' => $idEstabelecimento[0],
-                            ]);
-                        } else {
-                            $premioSorteado = $premioSorteadoNull;
-                            $premioSorteadoVazio = true;
-                        }
-                    } else {
-                        if (count($registrosUltimosPremios) != 2) {
-                            $this->ultimosPremios->create(['idPremio' => $idDoPremioSorteado]);
-                            $this->historico->create([
-                                'pesoPremio' => $premioSorteado->pesoPremio,
-                                'idParticipante' => $request->get('idParticipante'),
-                                'idPremioContemplado' => $premioSorteado->id,
-                                'idEstabelecimento' => $idEstabelecimento[0],
-                            ]);
-                        } else {
-                            $premioSorteado = $premioSorteadoNull;
-                            $premioSorteadoVazio = true;
-                        }
-                    }
-                }
+                $premioSorteado = $this->sortePremio();
+                $premiosAtivos = $this->premios->where('status', '=', 'ativo')->take(14)->get();
 
                 return response()->json([
                     'erro' => false,
-                    'idDoPremioSorteado' => $idDoPremioSorteado,
-                    'premioSorteadoVazio' => $premioSorteadoVazio,
+                    'idDoPremioSorteado' => $premioSorteado->id,
                     'premioSorteado' => $premioSorteado,
-                    'premiosRoleta' => $premiosAtivo
+                    'premiosRoleta' => $premiosAtivos
                 ]);
-            } else {
-                return response()->json([
-                    'erro' => true,
-                    'mensagem' => 'Para a roleta, é necessário que haja apenas 15 prêmios ativos, incluindo o prêmio vazio!.',
-                    'quantidadeDeStatusAtivo' => count($premiosAtivo)
-                ], 500);
-            }
+           
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
