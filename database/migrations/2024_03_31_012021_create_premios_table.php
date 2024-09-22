@@ -15,20 +15,12 @@ return new class extends Migration
         Schema::create('premios', function (Blueprint $table) {
             $table->id();
             $table->string('nomePremio');
-            $table->string('codigoColor');
             $table->string('caminhoImage');
             $table->integer('pesoPremio');
-            $table->integer('estoque')->nullable();
+            $table->integer('estoque');
             $table->enum('status', ['ativo', 'inativo'])->default('inativo');
             $table->timestamps();
         });
-
-        DB::table('premios')->insert([
-            'nomePremio' => 'Vazio',
-            'codigoColor' => '#FFD600',
-            'pesoPremio' => 0,
-            'caminhoImage' => 'tenteDeNovo.svg',
-        ]);
     }
     /**
      * Reverse the migrations.

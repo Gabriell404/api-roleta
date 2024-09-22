@@ -40,6 +40,7 @@ Route::post('/login', [UsuarioController::class, 'login']);
 
 // Rotas prêmios
 Route::get('/premios', [PremioController::class, 'index']);
+Route::get('/premios/{id}', [PremioController::class, 'find']);
 Route::get('/premios-roleta', [PremioController::class, 'getPremiosRoleta']);
 
 // Rotas promotores
@@ -49,9 +50,11 @@ Route::delete('/promotores/{id}', [PromotorController::class, 'delete']);
 Route::patch('/promotores/{id}', [PromotorController::class, 'update']);
 
 // Rotas participantes
-Route::get('/participantes/{cpf}', [ParticipanteController::class, 'find']);
+Route::get('/participantes/{telefone}', [ParticipanteController::class, 'find']);
 Route::get('/participantes', [ParticipanteController::class, 'index']);
 Route::post('/participantes', [ParticipanteController::class, 'create']);
 
 // Rota historico contemplados 
 Route::get('/historico-contemplados', [HistoricoContempladosController::class, 'index']);
+
+Route::get('/las', [PremioController::class, 'openRare']);

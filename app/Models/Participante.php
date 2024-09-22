@@ -16,4 +16,9 @@ class Participante extends Model
         'dataParticipacao',
         'idEstabelecimento'
     ];
+
+    public function estabelecimento()
+    {
+        return $this->belongsTo(Estabelecimento::class, 'idEstabelecimento');
+    }
 }

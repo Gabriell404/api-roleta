@@ -3,22 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Participante\ParticipanteCreateRequest;
+use App\Models\Estabelecimento;
 use App\Models\Participante;
 use Illuminate\Http\Request;
 
 class ParticipanteController extends Controller
 {
     private $participante;
+    private $estabelecimento;
 
-    public function __construct(Participante $participante)
+    public function __construct(Participante $participante, Estabelecimento $estabelecimento)
     {
         $this->participante = $participante;
+        $this->estabelecimento = $estabelecimento;
+
     }
 
     public function create(ParticipanteCreateRequest $request)
     {
         try {
             $participante = $this->participante->where('telefone', $request->get('telefone'))->first();
+            $estabelecimento = $this->estabelecimento->where('status', '=', 'ativo')->first();
 
             if ($participante) {
                 return response([
@@ -32,7 +37,7 @@ class ParticipanteController extends Controller
                 'idade' => $request->get('idade'),
                 'instagram' => $request->get('instagram'),
                 'telefone' => $request->get('telefone'),
-                'idEstabelecimento' => $request->get('idEstabelecimento')
+                'idEstabelecimento' => $estabelecimento->id
             ]);
 
             return response()->json([
@@ -124,11 +129,13 @@ class ParticipanteController extends Controller
         }
     }
 
-    public function find(String $cpf)
+    public function find(String $telefone)
     {
         try {
 
-            return response()->json($this->participante->query()->where('cpf', $cpf)->orderBy('id', 'desc')->first());
+            return response()->json(
+                $this->participante->query()->with('estabelecimento')->where('telefone', $telefone)->orderBy('id', 'desc')->first()
+            );
 
         } catch (\Throwable $th) {
             return $th->getMessage();

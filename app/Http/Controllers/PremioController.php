@@ -60,6 +60,10 @@ class PremioController extends Controller
         }
     }
 
+    public function find($id) {
+        return response()->json($this->premios::find($id));
+    }
+
     public function create(PremioCreateRequest $request)
     {
         try {
@@ -69,7 +73,6 @@ class PremioController extends Controller
 
                 if (Storage::disk('public')->put($fileName, File::get($file))) {
                     $input['nomePremio'] = $request->get('nomePremio');
-                    $input['codigoColor'] = $request->get('codigoColor');
                     $input['caminhoImage'] = $fileName;
                     $input['pesoPremio'] = $request->get('pesoPremio');
                     $input['estoque'] = $request->get('estoque');
@@ -97,9 +100,15 @@ class PremioController extends Controller
         ]);
     }
 
+    public function openRare()
+    {
+        return $this->historico->count();
+
+        // return response()->json($a);
+    }
+
     public function sortePremio()
     {
-
         $isValid = false;
 
         while (!$isValid) {
@@ -126,13 +135,13 @@ class PremioController extends Controller
                     }
                     break;
                 case 4:
-                    if ($qtdSorteadoPorPeso < 29) {
+                    if ($qtdSorteadoPorPeso < 29 && $this->openRare() >= 50) {
                         $this->createHistoricoContemplados($premioRandom);
                         $isValid = true;
                     }
                     break;
                 case 5:
-                    if ($qtdSorteadoPorPeso < 1) {
+                    if ($qtdSorteadoPorPeso < 1 && $this->openRare() >= 100) {
                         $this->createHistoricoContemplados($premioRandom);
                         $isValid = true;
                     }
@@ -147,16 +156,31 @@ class PremioController extends Controller
     public function getPremiosRoleta(Request $request)
     {
         try {
-                $premioSorteado = $this->sortePremio();
-                $premiosAtivos = $this->premios->where('status', '=', 'ativo')->take(14)->get();
-
+            if ($this->estabelecimento->where('status', '=', 'ativo')->count() == 0) {
                 return response()->json([
-                    'erro' => false,
-                    'idDoPremioSorteado' => $premioSorteado->id,
-                    'premioSorteado' => $premioSorteado,
-                    'premiosRoleta' => $premiosAtivos
+                    'erro' => true,
+                    'mensagem' => 'Para utilizar a roleta é necessário que tenha um estabelecimento ativo.'
                 ]);
-           
+            }
+
+            if ($this->premios->where('status', '=', 'ativo')->count() !== 14) {
+                return response()->json([
+                    'erro' => true,
+                    'mensagem' => 'Para utilizar a roleta é necessário que tenha apenas 14 premios ativos',
+                    'premiosAtivos' => $this->premios->where('status', '=', 'ativo')->count()
+                ]);
+            }
+
+            $premioSorteado = $this->sortePremio();
+            $premiosAtivos = $this->premios->where('status', '=', 'ativo')->take(14)->get();
+
+            return response()->json([
+                'erro' => false,
+                'idDoPremioSorteado' => $premioSorteado->id,
+                'premioSorteado' => $premioSorteado,
+                'premiosRoleta' => $premiosAtivos
+            ]);
+
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
@@ -212,15 +236,15 @@ class PremioController extends Controller
                 return response()->json([
                     'erro' => true,
                     'mensagem' => 'O ID fornecido não pertence a nenhum prêmio.'
-                ], 500);
+                ]);
             }
 
-            if (count($premioAtivo) == 7 && $request->get('status') == 'ativo') {
+            if (count($premioAtivo) == 14 && $request->get('status') == 'ativo') {
                 return response()->json([
                     'erro' => true,
                     'mensagem' => 'O limite máximo de prêmios com o status ativo foi alcançado.',
                     'quantidadeDeStatusAtivo' => count($premioAtivo)
-                ], 500);
+                ]);
             } else {
                 $premio->update([
                     'status' => $request->get('status')

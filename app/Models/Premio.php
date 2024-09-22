@@ -10,9 +10,7 @@ class Premio extends Model
     use HasFactory;
     protected $fillable = [
         'nomePremio',
-        'codigoColor',
         'caminhoImage',
-        'regraContemplacao',
         'pesoPremio',
         'estoque',
         'status'
