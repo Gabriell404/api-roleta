@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Premio\PremioCreateRequest;
-use App\Http\Requests\PremioGet\PremioGetRequest;
 use App\Models\Estabelecimento;
 use App\Models\HistoricoContemplados;
 use App\Models\Premio;
@@ -98,13 +97,14 @@ class PremioController extends Controller
             'idPremioContemplado' => $premioSorteado->id,
             'idEstabelecimento' => 1,
         ]);
+
+        $premio = $this->premios::find($premioSorteado->id);
+        $premio->update(['estoque' => $premioSorteado->estoque - 1]);
     }
 
     public function openRare()
     {
         return $this->historico->count();
-
-        // return response()->json($a);
     }
 
     public function sortePremio()
@@ -112,7 +112,7 @@ class PremioController extends Controller
         $isValid = false;
 
         while (!$isValid) {
-            $premioRandom = DB::table('premios')->where('status', '=', 'ativo')->inRandomOrder()->first();
+            $premioRandom = DB::table('premios')->where('status', '=', 'ativo')->where('estoque', '>', 0)->inRandomOrder()->first();
             $qtdSorteadoPorPeso = $this->historico->where('pesoPremio', '=', $premioRandom->pesoPremio)->count();
 
             switch ($premioRandom->pesoPremio) {
@@ -163,11 +163,11 @@ class PremioController extends Controller
                 ]);
             }
 
-            if ($this->premios->where('status', '=', 'ativo')->count() !== 14) {
+            if ($this->premios->where('status', '=', 'ativo')->where('estoque', '>', 0)->count() !== 14) {
                 return response()->json([
                     'erro' => true,
-                    'mensagem' => 'Para utilizar a roleta é necessário que tenha apenas 14 premios ativos',
-                    'premiosAtivos' => $this->premios->where('status', '=', 'ativo')->count()
+                    'mensagem' => 'Para utilizar a roleta é necessário que tenha apenas 14 premios ativos com estoque',
+                    'premiosAtivosComEstoque' => $this->premios->where('status', '=', 'ativo')->where('estoque', '>', 0)->count()
                 ]);
             }
 
@@ -213,7 +213,11 @@ class PremioController extends Controller
                     'mensagem' => 'O ID fornecido não pertence a nenhum prêmio.'
                 ], 500);
             } else {
-                $premio->update($request->all());
+                $premio->update([
+                    'nomePremio' => $request->get('nomePremio'),
+                    'pesoPremio' => $request->get('pesoPremio'),
+                    'estoque' => $request->get('estoque')
+                ]);
 
                 return response()->json([
                     'erro' => false,
