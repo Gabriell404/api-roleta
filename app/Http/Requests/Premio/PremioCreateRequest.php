@@ -10,7 +10,6 @@ class PremioCreateRequest extends FormRequest
     {
         return [
             'nomePremio' => 'required|min:2|max:255',
-            'codigoColor' => 'required|min:2|max:255',
             'pesoPremio' => 'required|min:1|max:255',
             'fileImagemPremio' => 'required'
         ];
@@ -23,9 +22,6 @@ class PremioCreateRequest extends FormRequest
             'nomePremio.required' => 'nomePremio não pode ser vazio.',
             'nomePremio.min' => 'nomePremio deve conter no minimo :min caracteres.',
             'nomePremio.max' => 'nomePremio deve conter no máximo :max caracteres.',
-            'codigoColor.required' => 'codigoColor não pode ser vazio.',
-            'codigoColor.min' => 'codigoColor deve conter no minimo :min caracteres',
-            'codigoColor.max' => 'codigoColor deve conter no máximo :max caracteres',
             'pesoPremio.required' => 'pesoPremio não pode ser vazio.',
             'pesoPremio.min' => 'pesoPremio deve conter no minimo :min caracteres',
             'pesoPremio.max' => 'pesoPremio deve conter no máximo :max caracteres',
