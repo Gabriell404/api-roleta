@@ -48,7 +48,7 @@ class PremioController extends Controller
                         return $query->get();
                     }
 
-                    return $query->paginate(10);
+                    return $query->paginate(5);
                 }, function ($query) {
                     return $query->get();
                 });
@@ -109,6 +109,10 @@ class PremioController extends Controller
 
     public function sortePremio()
     {
+        if ($this->historico->count() === 1000) {
+            DB::table('historico_contemplados')->delete();
+        }
+
         $isValid = false;
 
         while (!$isValid) {
